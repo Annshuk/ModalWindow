@@ -22,29 +22,17 @@ $('.openPop').OpenPopUp({
 	popupName:'popup', 
 	overlayId:'bg-overlay', 
 	//appendTo:'.wrapper',
-	closeName:'close'	
+	closeName:'close',
+	container: {id:"#popup", header:"Confirmation Window", article:"This is a Demo content"}	
 	});
 });
 </script>
 </head>
 <body>
-
-<div class="popup-container" name="popup">
-<header class="header">
-<h3>Confirm Box </h3>
-<input type='button' class="close"  value="Stop Accquire X" rel="close"/>
-</header>
-<article>
-<p>This is Article </p>
-</article>
-<footer>
-<input type="button" value="Cancel" id="cancel" rel="close" />
-</footer>
-</div>
-
 <div class="wrapper">
-<a href="#" class="openPop">Open Modal Window</a>
-<a href="#">Color Green</a>
+<p><a href="javascript:;" class="openPop">Open Modal Window</a><a href="javascript:;">Color Green</a></p>
+<div id="popup"></div>
+
 </div>
 </body>
 </html>
