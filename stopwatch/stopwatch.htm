@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Stop Watch</title>
+<style>
+*{margin:0; padding:0; box-sizing:border-box}
+*, *::after, *::before{box-sizing:border-box; -webkit-box-sizing:border-box}
+body{ font:normal 11px/15px Arial, Helvetica, sans-serif;}
+#wrap{ width:100%; position:relative; margin:0 auto; text-align:left;}
+.row{ width:100%; position:relative;}
+.container{ padding:10px; border:1px #000 solid}
+.container:after, .row:after{content:''; display:table; vertical-align:middle; clear:both;}
+.center{ text-align:center;}
+.fluid{width:100%;}
+.fixed{ width:1003px; margin:0 auto}
+.row > .col{ float:left}
+.space-top{ margin-top:10px;}
+
+
+.have-2-col > .col{width:50%;}
+.have-3-col > .col{width:33.333%;}
+.have-4-col > .col{width:25%;}
+.have-5-col > .col{width:20%;}
+.have-6-col > .col{width:16.666%;}
+.have-7-col > .col{width:14.28571%;}
+.have-8-col > .col{width:12.5%;}
+</style>
+
+</head>
+<body>
+<div id="wrap">
+  <div class="container fixed">
+    <div class="row center have-4-col">
+    	<div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+    </div>
+    <div class="row have-4-col center space-top">
+    	<div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+        <div class="col">dfgdfgd</div>
+    </div>
+    </div>
+</div>
+
+<script src="jquery.min.js"></script>
+<script>
+	$(function(){
+		$.fn.stopWatch = function(options){
+			opt :{'hours', 'min', 'sec', 'ms'};
+		};
+		
+	});
+</script>
+</body>
+</html>
