@@ -11,12 +11,15 @@ body{ font:normal 11px/15px Arial, Helvetica, sans-serif;}
 .row{ width:100%; position:relative;}
 .container{ padding:10px; border:1px #000 solid}
 .container:after, .row:after{content:''; display:table; vertical-align:middle; clear:both;}
+h3{ line-height:20px; font-size:12pt;}
 .center{ text-align:center;}
 .fluid{width:100%;}
 .fixed{ width:1003px; margin:0 auto}
+.ulWrap{ list-style:none;}
+.ulWrap li{ display:block; float:left;}
+
 .row > .col{ float:left}
 .space-top{ margin-top:10px;}
-
 
 .have-2-col > .col{width:50%;}
 .have-3-col > .col{width:33.333%;}
@@ -25,32 +28,26 @@ body{ font:normal 11px/15px Arial, Helvetica, sans-serif;}
 .have-6-col > .col{width:16.666%;}
 .have-7-col > .col{width:14.28571%;}
 .have-8-col > .col{width:12.5%;}
+.stopwatch{border:1px #57A8E3 solid; background-color:#B7DBF9; color:#3A5AAD; padding:5px; margin:2px 5px;}
+.stopwatch .timer{ }
+.stopwatch .timer .getTime{ color:#2E3592; padding:2px 5px; text-align:center; font-size:12pt; font-weight:bold; display:block}
+.stopwatch .timer .getTime span{ display:inline-block}
+.stopwatch .timer .getTime span:after{content:":"}
+.stopwatch .timer .getTime span:last-child:after{content:""}
+.saveSplit{ display:block; text-align:left; padding:5px}
+.saveSplit span{ display:block}
 </style>
 
 </head>
 <body>
 <div id="wrap">
-  <div class="container fixed">
-    <div class="row center have-4-col">
-    	<div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-    </div>
-    <div class="row have-4-col center space-top">
-    	<div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-        <div class="col">dfgdfgd</div>
-    </div>
+  <div class="container fixed">  
+  <h3>Stop Watch</h3>
+  		<div class="row have-4-col">  
+        <div class="col" id="stopwatch"></div>
+        <div class="col" id="stopwatch2"></div>
+        
+        </div>  
     </div>
 </div>
 
@@ -58,10 +55,124 @@ body{ font:normal 11px/15px Arial, Helvetica, sans-serif;}
 <script>
 	$(function(){
 		$.fn.stopWatch = function(options){
-			opt :{'hours', 'min', 'sec', 'ms'};
-		};
+			defaults = {class:null, timerClass:null, delay:0, buttons:{}}			
+			//global variable
+			var isStart, content='', saveSplit='', lapdate=''
+			var counter=0, seconds = 0, minutes = 0, hours = 0, millisec=0, splitTime =[];
+			
+			defaults.delay = defaults.delay || 1;			
+			var set = $.extend({}, defaults, options)
+			return this.each(function(){
+				//create div content for timer $(this) == stopwatch;
+				var swContent = $('<div/>', {"class": set.class}).appendTo($(this));
+				var timerClass = $('<div/>', {"class": set.timerClass}).appendTo(swContent);
+				var output = $('<p/>', {"class": 'getTime', "text": '00:00:00.00'}).appendTo(timerClass);							
+				//get all buttons				
+					for(var b in set.buttons){						
+						if(b=='class' || b=='className') continue; 							
+						$('<button/>', {"value": set.buttons[b], "text": set.buttons[b], "class": set.buttons.class || set.buttons.className}).appendTo(timerClass);
+					}				
+					$("[value="+set.buttons.start+"]", this).on('click', function(){
+						$('<div/>', {"class": 'saveSplit'}).appendTo(timerClass);
+						$(this).attr('disabled', true);			
+						if (!isStart) timer()
+						
+					});
+					
+					$("[value="+set.buttons.stops+"]", this).on('click', function(){						
+						 if (isStart) clearTimeout(isStart);
+							 splitTime = $(output).text();
+					});
+					
+					$("[value="+set.buttons.reset+"]", this).on('click', function(){
+						 clearTimeout(isStart);	
+						 isStart=false, seconds = 0, minutes = 0, hours = 0, millisec=counter=0;
+						 $(this).parent().find('.getTime').text('00:00:00:00');
+						 $(this).parent().find("[value="+set.buttons.start+"]").prop('disabled', false);
+						 $(this).parent().find('.saveSplit').remove();	
+					});
+					
+					$("[value="+set.buttons.splitLap+"]", this).on('click', function(){	
+					   saveSplit  = $(output).text();
+					  // saveSplit = splitTime.push(saveSplit)
+						if(lapdate != '')
+							{
+							var lapold = lapdate.split(':');
+							var lapnow = saveSplit.split(':');
+							var lapcount = [];		
+							for( x = 0; x<lapold.length;x++)
+								{
+								lapcount[x] = [];
+								lapcount[x][0] = lapold[x]*1;
+								lapcount[x][1] = lapnow[x]*1;
+								}
+							if(lapcount[1][1] < lapcount[1][0])
+								{
+								lapcount[1][1] += 60;
+								lapcount[0][1] -= 1;
+								console.log(lapcount)
+								}
+							if(lapcount[2][1] < lapcount[2][0])
+								{
+								lapcount[2][1] += 10;
+								lapcount[1][1] -= 1;								
+								}
+								
+							var mzeros = (lapcount[0][1] - lapcount[0][0]) < 10?'0':'';
+							var szeros = (lapcount[1][1] - lapcount[1][0]) < 10?'0':'';							
+							 //mzeros + (lapcount[0][1] - lapcount[0][0]) + ':' + szeros + (lapcount[1][1] - lapcount[1][0]) + ':' + (lapcount[2][1] - lapcount[2][0]);
+							}
+							
+							lapdate = saveSplit;
+							
+						    				 
+
+						
+					
+												
+					});					
+					//startTimer
+					var start = function(){
+							millisec++;
+								if (millisec >= 90) {
+									millisec = 0;
+									 seconds++;
+									 if (seconds >= 60) {
+										seconds = 0;
+										 minutes++;
+										  if (minutes >= 60) {
+											minutes = 0;
+											hours++;
+										  }
+									 }
+								}
+					$(output).text((hours  ? (hours > 9 ? hours : "0" + hours) : "00")+ ":" 
+								+ (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00")+ ":"
+								+ (seconds ? (seconds > 9 ? seconds : "0" + seconds) : "00")+":"
+								+ (millisec > 9 ? millisec : "0" + millisec)
+								);
+								timer();
+					};			
+			//timer Setitmeout
+			var timer = function(){	isStart = setTimeout(start, set.delay);}		
+		});//return each close
+	}// plugins end
 		
-	});
+		//init the plugins
+		//for button object class or className will work for button object;
+		$("#stopwatch").stopWatch({class: 'stopwatch', timerClass: 'timer', buttons:{
+			class:'btns black', start:'Start', stops:'Stop', reset:'Reset', splitLap:'Lap'}
+		});
+		$("#stopwatch2").stopWatch({class: 'stopwatch', timerClass: 'timer', buttons:{
+			class:'btns black', start:'Start', stops:'Stop', reset:'Reset', splitLap:'Lap'}
+		});
+		//$("#stopwatch3").stopWatch({class: 'stopwatch', timerClass: 'timer', buttons:{
+		//	class:'btns black', start:'Start', stops:'Stop', reset:'Reset', splitLap:'Split'}
+		//});
+	})
+
+
+
 </script>
 </body>
 </html>
